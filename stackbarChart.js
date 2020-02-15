@@ -42,7 +42,7 @@ function drawBarChart(data) {
 
   color = d3.scaleOrdinal()
     .domain(series.map(d => d.key))
-    .range(d3.schemeCategory10)
+    .range(d3.schemeSet1.slice(1))
     .unknown("#ccc")
 
   y = d3.scaleLinear()
@@ -54,7 +54,7 @@ function drawBarChart(data) {
     .range([margin.left, width - margin.right])
     .padding(0.1)
 
-  var canvas = d3.select("body")
+  var canvas = d3.select("#vis")
     .append("svg")
     .attr("viewBox", [0, 0, width, height]);
 

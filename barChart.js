@@ -1,55 +1,82 @@
-//import {select,csv} from 'd3';
-//const svg = d3.select('svg');
+//import {legend} from "@d3/color-legend"
+//d3 = require("d3@5")
 
-const width = 960;
-console.log(width);
-const height = 500;
-console.log(height);
-const svg = d3.select("body")
-.append("svg")
-.attr("viewBox", [0, 0, width, height]);
+margin = ({
+  top: 10,
+  right: 10,
+  bottom: 20,
+  left: 40
+})
+
+height = 500
+width = 1200
+
+formatValue = x => isNaN(x) ? "N/A" : x.toLocaleString("en")
 
 
-// create one rectangle for each row of our data table;
-const render = data => {
-    const margin = {top:20,right:20,bottom:20,left:20};
-    const innerWidth = width - margin.left - margin.right;
-    console.log(innerWidth);
-    const innerHeight = height - margin.top - margin.bottom;
-    console.log(innerHeight);
-    //20 here is the number of pixels away from the edge.
-    const xScale = d3.scaleLinear()// it should draw 12 ranctangle,it does not
-        .domain([0,d3.max(data,d => d.passenger )])
-        .range([0,innerWidth]); // this doesnot work
-    
-    const yScale = d3.scaleBand()
-        .domain(data.map(d => d.year))
-        .range([0,innerHeight]); // this will cause the data elements to be 
-        // arranged from top to bottom
-    console.log(xScale.range());// why print 12 times?
+d3.dsv(",","Asia.csv").then(function (data) {
+  console.log("data loaded: ");
+  console.log(data);
 
-    const g = svg.append('g')
-        .attr('transform',`translate(${margin.left}),${margin.top}`);
-
-    g.selectAll('rect').data(data)
-        .enter().append('rect')
-          .attr('y',d=> yScale(d.year))
-          .attr('width', d => xScale(d.passenger))
-          .attr('height',yScale.bandwidth())// bandwidth is to compute width of a single bar
-           // use yScale to set the height of these ranctangles
-};
-d3.csv('Asia.csv').then(data => {
-    data.forEach(d => {
-        d.passenger = +d.passenger;
-        d.year = +d.year;
-        //console.log(JSON.stringify(Object.keys(d)));
-        //console.log(Object.keys(d));
-        render(data);
-    })
-    console.log(data);
+  drawBarChart(data);
 });
+//file_string = await FileAttachment("uspopulations.csv").text();
 
-//use d3 linear and band scales to really make these rectangles bars of
-//a bar chart that correspond to the data
+function drawBarChart(data) {
 
-// construct a linear scale
+  yAxis = g => g
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y).ticks(null, "s"))
+    .call(g => g.selectAll(".domain").remove())
+
+  xAxis = g => g
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(d3.axisBottom(x).tickSizeOuter(0))
+    .call(g => g.selectAll(".domain").remove())
+
+  series = d3.stack()
+    .keys(data.columns.slice(1))
+    (data)
+    .map(d => (d.forEach(v => v.key = d.key), d))
+  console.log(series);
+
+  color = d3.scaleOrdinal()
+    .domain(series.map(d => d.key))
+    .range(d3.schemeDark2)
+    .unknown("#ccc")
+
+  y = d3.scaleLinear()
+    .domain([0, d3.max(series, d => d3.max(d, d => d[1]))])
+    .rangeRound([height - margin.bottom, margin.top])
+
+  x = d3.scaleBand()
+    .domain(data.map(d => d["Year of Activity Period"]))
+    .range([margin.left, width - margin.right])
+    .padding(0.1)
+
+  var canvas = d3.select("#vis")
+    .append("svg")
+    .attr("viewBox", [0, 0, width, height]);
+
+  canvas.append("g")
+    .selectAll("g")
+    .data(series)
+    .join("g")
+    .attr("fill", d => color(d.key))
+    .selectAll("rect")
+    .data(d => d)
+    .join("rect")
+    .attr("x", (d, i) => x(d.data["Year of Activity Period"]))
+    .attr("y", d => y(d[1]))
+    .attr("height", d => y(d[0]) - y(d[1]))
+    .attr("width", x.bandwidth())
+    .append("title")
+    .text(d => `${d.data["Year of Activity Period"]} ${d.key}
+    ${formatValue(d.data[d.key])}`);
+
+  canvas.append("g")
+    .call(xAxis);
+
+  canvas.append("g")
+    .call(yAxis);
+}

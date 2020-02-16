@@ -1,12 +1,14 @@
-# README
+# Zhenzhen Wang
 
-<https://usf-cs360-spring2020.github.io/template-bulma/>
+<https://usf-cs360-spring2020.github.io/web-ZhenzhenWang918/>
 
-![Profile Image](profile.png)
+![Profile Image](IMG_4169.jpeg)
 
-**Name:** Your Name  
-**Email:** <username@dons.usfca.edu>
 
-This is a template website using [Bulma](https://bulma.io/), [FontAwesome](https://origin.fontawesome.com/) for icons, and [Github Pages](). Designed to be modified (including this README file).
+**Email:** <zwang211@dons.usfca.edu>
 
-*Template based on: <https://github.com/usf-cs360-spring2020/template-bulma>*
+**Major:** Computer Sciense
+
+**Graduation:** 2022 Fall
+
+**About Me:** I am a computer science bridge student in University of San Francisco. I am from *China*, coming here for studying.
